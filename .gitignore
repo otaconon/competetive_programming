@@ -1,0 +1,14 @@
+# Ignore directories
+.cph/
+.vscode/
+bits/
+build/
+CP/
+.idea/
+cmake-build-debug/
+
+# Ignore file types
+*.exe
+*.in
+*.out
+*.txt
