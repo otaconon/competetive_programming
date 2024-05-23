@@ -1,51 +1,37 @@
-#include <algorithm>
-#include <iostream>
-#include <queue>
+#include <bits/stdc++.h>
 using namespace std;
+const long long INF = 1LL<<60;
 
-const int MAX_N = 2e5;
+// 入力
+vector<long long> A;
 
-int N;
-int ans[MAX_N];
-vector<pair<pair<int, int>, int>> v(MAX_N);
+// 盤面 (l, r) からスタートして、
+// その状態で手番であるプレイヤー視点での相手との得点差の最大値を返す
+long long dfs(int l, int r, vector<vector<long long>> &dp) {
+    // メモ化済みならば、メモ化された値を返す
+    if (dp[l][r] != -INF) return dp[l][r];
+    
+    // 終端条件
+    if (l == r) return 0;
+    
+    // 打てる手をすべて試す
+    long long res = -INF;
+    res = max(res, -dfs(l+1, r, dp) + A[l]);  // 先頭を除去
+    res = max(res, -dfs(l, r-1, dp) + A[r-1]);  // 末尾を除去
+    
+    // メモ化しながら答えを返す
+    return dp[l][r] = res;
+}
 
 int main() {
-	cin >> N;
-	v.resize(N);
-	for (int i = 0; i < N; i++) {
-		cin >> v[i].first.first >> v[i].first.second;
-		v[i].second = i;  // store the original index
-	}
-	sort(v.begin(), v.end());
-
-	int rooms = 0, last_room = 0;
-	priority_queue<pair<int, int>> pq;  // min heap to store departure times.
-	for (int i = 0; i < N; i++) {
-		if (pq.empty()) {
-			last_room++;
-			// make the departure time negative so that we create a min heap
-			// (cleanest way to do a min heap... default is max in c++)
-			pq.push(make_pair(-v[i].first.second, last_room));
-			ans[v[i].second] = last_room;
-		} else {
-			// accessing the minimum departure time
-			pair<int, int> minimum = pq.top();
-			if (-minimum.first < v[i].first.first) {
-				pq.pop();
-				pq.push(make_pair(-v[i].first.second, minimum.second));
-				ans[v[i].second] = minimum.second;
-			}
-
-			else {
-				last_room++;
-				pq.push(make_pair(-v[i].first.second, last_room));
-				ans[v[i].second] = last_room;
-			}
-		}
-
-		rooms = max(rooms, int(pq.size()));
-	}
-
-	cout << rooms << "\n";
-	for (int i = 0; i < N; i++) { cout << ans[i] << " "; }
+    // 入力
+    int N;
+    cin >> N;
+    A.resize(N);
+    for (int i = 0; i < N; ++i) cin >> A[i];
+    
+    // メモ化再帰
+    vector<vector<long long>> dp(N+1, vector<long long>(N+1, -INF));
+    long long ans = dfs(0, N, dp);
+    cout << ans << endl;
 }
