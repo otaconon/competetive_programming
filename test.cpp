@@ -34,4 +34,6 @@ int main() {
     vector<vector<long long>> dp(N+1, vector<long long>(N+1, -INF));
     long long ans = dfs(0, N, dp);
     cout << ans << endl;
+
+    bool is_valid = false;
 }
