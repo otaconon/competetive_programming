@@ -1,0 +1,17 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        int n, m, k;
+        cin >> n >> m >> k;
+
+        long long ans = min(k, n);
+        ans *= min(k, m);
+
+        cout << ans << endl;
+    }
+}

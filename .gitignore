@@ -8,7 +8,7 @@ CP/
 cmake-build-debug/
 
 # Ignore file types
-*.exe
-*.in
-*.out
-*.txt
+**.exe
+**.in
+**.out
+**.txt

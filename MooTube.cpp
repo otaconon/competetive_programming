@@ -1,7 +1,11 @@
-#include "bits/stdc++.h"
-#include <iostream>
+#include <bits/stdc++.h>
 
 using namespace std;
+
+void setIO(string s) {
+	freopen((s + ".in").c_str(), "r", stdin);
+	freopen((s + ".out").c_str(), "w", stdout);
+}
 
 class UnionFind {
 public:
@@ -18,6 +22,7 @@ public:
         while (x != root[x]) {
             x = root[x];
         }
+        return x;
     }
 
     void unify(int a, int b) {
@@ -53,8 +58,9 @@ private:
 int n, Q;
 
 int main() {
+    setIO("mootube");
     cin >> n >> Q;
-    vector<tuple<int, int, int>> a(n-1);
+    vector<tuple<int, int, int>> a(n);
     for (int i = 0; i < n-1; i++) {
         int p, q, r;
         cin >> p >> q >> r;
@@ -62,24 +68,25 @@ int main() {
         a[i] = {r, p, q};
     }
 
-    map<int, int> b;
+    vector<tuple<int, int, int>> b(Q);
     for (int i = 0; i < Q; i++) {
-        int x;
-        cin >> x;
-        b[x] = i;
+        int x1, x2;
+        cin >> x1 >> x2;
+        b[i] = {x1, x2-1, i};
     }
 
-    sort(a.begin(), a.end());
+    sort(b.rbegin(), b.rend());
+    sort(a.rbegin(), a.rend());
 
     int j = 0;
-    UnionFind uf(n-1);
-    vector<int> ans(n-1);
-    for (auto [k, i] : b) {
-        while (get<0>(a[j]) <= k && j < n-1) {
+    UnionFind uf(n);
+    vector<int> ans(Q);
+    for (auto [k, x, i] : b) {
+        while (get<0>(a[j]) >= k && j < n-1) {
             uf.unify(get<1>(a[j]), get<2>(a[j]));
             j++;
         }
-        ans[i] = uf.getNumOfComp(get<1>(a[0]));
+        ans[i] = uf.getNumOfComp(x) - 1;
     }
 
     for (auto x : ans) {
