@@ -1,43 +1,75 @@
 #include <iostream>
-#include <algorithm>
+#include <cstdlib>
+#include <time.h>
+#include <stdlib.h>
+#include <windows.h>
 #include <vector>
-#include <numeric>
-#include <map>
-#include <string>
-#include <bits/stdc++.h>
+#include <random>
 
 using namespace std;
 
-void foo1(const std::string& s) {
-    std::string out = s;
-    for (auto& c : out) {
-        ++c;
+void Sortuj(vector<int>& vec){
+    for(int i = 0; i < vec.size() - 1; i++){
+        for(int j = 0; j < vec.size() - i - 1; j++){
+            if(vec[j] < vec[j + 1]){
+                swap(vec[j], vec[j + 1]);
+            }
+        }
     }
-    std::cout << out << std::endl;
 }
 
-void foo1(std::string&& s) {
-    string out = std::move(s);
-    for (auto& c : out) {
-        ++c;
+void Losuj(vector<int>& vec){
+    for(int i = 0; i < 5; i++){
+        vec[i] = rand() % 6 + 1;
     }
-    std::cout << out << std::endl;
 }
 
-class Foo {
-public:
-    Foo(string&& s) : s(s) {
-
+void Sprawdz(vector<int>& vec){
+    vector<int> liczby(6);
+    for(int i = 0; i < vec.size(); i++){
+        liczby[vec[i]-1]++;
     }
 
-private:
-    string s;
-};
+    for(int i = 0; i < liczby.size(); i++){
+        if(liczby[i] == 5){
+            cout << "POKER" << endl;
+        }
+        else if(liczby[i] == 4){
+            cout << "Kareta" << endl;
+        }
+        else if(liczby[i] == 3){
+            cout << "Trójka" << endl;
+        }
+        else if(liczby[i] == 2){
+            cout << "Para" << endl;
+        }
+    }
+}
 
-int main() {
+int main()
+{
+    vector<int> gracz1(5);
+    vector<int> gracz2(5);
 
-    std::string a = "Bla bla bla";
-    Foo foo("asdjasjds");
-    std::cout << a << endl;
+    srand(time(0));
+    Losuj(gracz1);
+    Losuj(gracz2);
+
+    Sortuj(gracz1);
+    Sortuj(gracz2);
+
+    Sprawdz(gracz1);
+    Sprawdz(gracz2);
+
+    cout << "Twoje kostki:" << endl;
+    for(int i = 0; i < 5; i++){
+        cout << gracz1[i] << " ";
+    }
+    cout << endl;
+    cout << "Kostki przeciwnika:" << endl;
+    for(int i = 0; i < 5; i++){
+        cout << gracz2[i] << " ";
+    }
+
     return 0;
 }
