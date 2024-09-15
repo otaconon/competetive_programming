@@ -11,12 +11,11 @@ using namespace std;
 
 int main()
 {
-    random_device rd;
-    vector<int> a = {1, 2, 3, 4, 5, 6};
-    shuffle(a.begin(), a.end(), rd);
-
-    for (int i = 0; i < a.size(); i++) {
-        cout << a[i] << ' ';
+    string s = "asaksdkasdkla";
+    string x = s;
+    reverse(x.begin(), x.end());
+    if (x == s) {
+        
     }
 
     return 0;

@@ -2,55 +2,63 @@
 
 using namespace std;
 
-struct point {
-    long long x, y;
-};
+constexpr int M = 2 * 1e6;
 
-bool compareByX(const point& a, const point& b) {
-    return a.x < b.x;
+long long n, d;
+
+int getInd(int i)
+{
+	return i + M;
 }
 
-bool compareByY(const point& a, const point& b) {
-    return a.y < b.y;
+vector<long long> findSum(vector<long long>& v)
+{
+	sort(v.begin(), v.end());
+
+	vector<long long> s(2*M+1);
+	s[getInd(-M)] = std::accumulate(v.begin(), v.end(), 0LL) + n * M;
+	int j = 0;
+	for (int i = -M + 1; i < M + 1; i++)
+	{
+		while (j < n && i > v[j])
+		{
+			j++;
+		}
+
+		s[getInd(i)] = s[getInd(i - 1)] + 2LL * j - n;
+	}
+
+	return s;
 }
 
-int main() {
-    int n, d;
-    cin >> n >> d;
-    vector<point> p(n);
+int main()
+{
+	cin >> n >> d;
+	vector<long long> x(n);
+	vector<long long> y(n);
 
-    for (int i = 0; i < n; i++) {
-        cin >> p[i].x >> p[i].y;
-    }
+	for (int i = 0; i < n; i++)
+	{
+		cin >> x[i] >> y[i];
+	}
 
-    vector<long long> dx(p.back().x - p.front().x);
-    sort(p.begin(), p.end(), compareByX);
+	auto xSum = findSum(x);
+	auto ySum = findSum(y);
 
-    for (int i = 0; i < n; i++) {
-        dx[0] += abs(p.front().x - p[i].x);
-    }
+	sort(xSum.begin(), xSum.end());
+	sort(ySum.begin(), ySum.end());
 
-    int onLeft = 0, onRight = n;
-    for (int x = p.front().x, i = 0; x <= p.back().x; x++) {
-        int ind = x - p.front().x + 1;
-        while (i < p.size() && x > p[i].x) {
-            i++;
-            onLeft++;
-            onRight--;
-        }
-        dx[ind] = dx[ind - 1] + onRight - onLeft;
-    }
+	long long ans = 0;
+	int j = 0;
+	for (int i = 2 * M; i >= 0; i--)
+	{
+		while (j < 2 * M + 1 && xSum[i] + ySum[j] <= d)
+		{
+			j++;
+		}
 
-    long long ans = 0;
-    for (int i = 0; i < dx.size(); i++) {
-        if (dx[i] <= d) {
-            ans++;
-        }
-    }
+		ans += j;
+	}
 
-    for (auto& d : dx) {
-        cout << d << endl;
-    }
-
-    cout << ans << endl;
+	cout << ans << endl;
 }
