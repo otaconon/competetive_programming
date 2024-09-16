@@ -3,7 +3,7 @@
 using namespace std;
 
 int main() {
-    int n;
+    long long n;
     cin >> n;
 
     vector<vector<int>> ind(n+1);
@@ -15,16 +15,15 @@ int main() {
 
     for (int i = 1; i <= n; i++) {
         ind[i].push_back(0);
-        ind[i].push_back(n);
+        ind[i].push_back(n+1);
         sort(ind[i].begin(), ind[i].end());
     }
 
-    long long ans = ((n + 1)/2) * n;
+    long long ans = (((n + 1) * n)/2) * n;
     for (int i = 1; i <= n; i++) {
-
         for (int j = 0; j < ind[i].size()-1; j++) {
-            int len = ind[i][j+1] - ind[i][j] - 1;
-            ans -= ((len + 1)/2)*len;
+            long long len = ind[i][j+1] - ind[i][j] - 1;
+            ans -= (((len + 1) * len)/2);
         }
     }
 

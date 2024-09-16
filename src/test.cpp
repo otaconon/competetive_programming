@@ -9,14 +9,19 @@
 
 using namespace std;
 
+class xd {
+public:
+    char map[10][10];
+    xd() {
+        for (int i = 0; i < 10; i++) {
+            map[i][10] = 1;
+        }
+    }
+};
+
 int main()
 {
-    string s = "asaksdkasdkla";
-    string x = s;
-    reverse(x.begin(), x.end());
-    if (x == s) {
-        
-    }
+    xd x;
 
-    return 0;
+    
 }
