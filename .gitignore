@@ -6,6 +6,7 @@ build/
 CP/
 .idea/
 cmake-build-debug/
+ac-library/
 
 # Ignore file types
 **.exe
