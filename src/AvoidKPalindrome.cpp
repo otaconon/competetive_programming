@@ -1,6 +1,9 @@
 #include <bits/stdc++.h>
+#include <ranges>
 
 using namespace std;
+
+constexpr long long MOD = 998244353;
 
 int main() {
     int n, k;
@@ -8,53 +11,48 @@ int main() {
     string s;
     cin >> s;
 
-    vector<int> can_be(n);
-    for (int i = 0; i + k < s.size(); i++) {
-        string left = "";
-        string right = "";
-        for (int j = i; j < i + k; j++) {
-            if (j < i + k / 2) {
-                left += s[j];
-            }
-            else if (j >= i + (k + 1) / 2) {
-                right += s[j];
-            }
-        }
-        reverse(right.begin(), right.end());
+    map<string, long long> mp;
+    string z;
+    for (int i = 0; i < k-1; i++)
+        z += 'C';
+    mp[z] = 1;
 
-        bool palindrome = true;
-        for (int j = 0; j < left.size(); j++) {
-            if (left[j] != right[j] && left[j] != '?' && right[j] != '?') {
-                palindrome = false;
-                break;
+    for (auto c : s) {
+        map<string, long long> tmp;
+
+        for (auto& [t, v] : mp) {
+            if (c != 'B') {
+                tmp[t + 'A'] = v;
+            }
+            if (c != 'A') {
+                tmp[t + 'B'] = v;
             }
         }
 
-        if (palindrome) {
-            for (int j = 0; j < left.size(); j++) {
-                if (left[j] == right[j] && right[j] == '?') {
-                    can_be[j] = 1;
+        mp.clear();
+
+        for (auto& [t, v] : tmp) {
+            string x = t;
+            reverse(x.begin(), x.end());
+            if (t != x) {
+                string new_s = t.substr(1, t.size() - 1);
+                if (mp.count(new_s)) {
+                    mp[new_s] += v;
+                    mp[new_s] %= MOD;
                 }
-                else if (left[j] == '?' || right[j] == '?') {
-                    can_be[j] = 2;
+                else {
+                    mp[new_s] = v;
+                    mp[new_s] %= MOD;
                 }
             }
         }
     }
 
-    int ans = 0;
-    int cnt = 0;
-    for (int i = 0; i < n; i++) {
-        if (can_be[i]) {
-            if (ans == 0) {
-                ans = 1;
-            }
-            else {
-                ans *= can_be[i];
-            }
-            cnt++;
-        }
+    long long ans = 0;
+    for (auto& [t, v] : mp) {
+        ans += v;
+        ans %= MOD;
     }
 
-    cout << pow(2, n) - pow(2, n - cnt) - ans << endl;
+    cout << ans << endl;
 }
