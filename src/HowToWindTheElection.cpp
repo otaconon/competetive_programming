@@ -2,48 +2,69 @@
 
 using namespace std;
 
-int main() {
-    int n, m, k;
-    cin >> n >> m >> k;
-    vector<pair<int, long long>> a(n);
-    for (int i = 0; i < n; i++) {
-        cin >> a[i].first;
-        k -= a[i].first;
-        a[i].second = i;
-    }
+constexpr long long MOD = 998244353;
 
-    sort(a.begin(), a.end());
+using ll = long long;
 
-    vector<long long> ans(n);
+int main()
+{
+	long long n, m, k;
+	cin >> n >> m >> k;
+	vector<ll> a(n);
+	for (auto& x : a) cin >> x;
+	const ll rem = k - accumulate(a.begin(), a.end(), 0LL);
 
-    for (int i = 0; i < n; i++) {
-        long long l = 0, r = 1e12+1;
-        while (l < r) {
-            long long mid = l + (r - l) / 2;
+	if (n == m) {
+		for (int i = 0; i < n; i++) cout << 0 << " \n"[i == n - 1];
+		return 0;
+	}
 
-            auto it = upper_bound(a.begin(), a.end(), mid + a[i].first, [](const long long& value, const pair<int, long long>& p) {
-                          return value < p.first;
-                      });
-                      
-            if (it == a.end() || a.end() - it < m) {
-                r = mid;
-            }
-            else {
-                l = mid + 1;
-            }
-        }
+	vector<int> ord(n);
+	iota(ord.begin(), ord.end(), 0);
+    sort(ord.begin(), ord.end(), [&](int i, int j) {return a[i] < a[j];});
+    auto b = a;
+	sort(b.begin(), b.end());
 
-        if (l > k) {
-            ans[a[i].second] = -1;
-        }
-        else {
-            ans[a[i].second] = l;
-        }
-    }
-    
+    vector<ll> pref(n+1);
+    for (int i = 0; i < n; i++)
+        pref[i+1] = pref[i] + b[i];
 
-    for (int i = 0; i < n; i++) {
-        cout << ans[i] << ' ';
-    }
+	vector<long long> ans(n, -1);
+	for (int i = 0; i < n; i++)
+	{
+		ll l = -1, r = rem + 1;
+		while (r - l > 1)
+		{
+			ll mid = (l + r) / 2;
+
+			long long rid = lower_bound(b.begin(), b.end(), b[i] + mid + 1) - b.begin();
+			long long lid = n - m - (i >= n - m ? 1 : 0);
+			long long cnt = 0;
+
+			if (rid > lid)
+                cnt += (rid - lid) * (b[i] + mid + 1) - (pref[rid] - pref[lid]);
+
+			if (lid <= i && i < rid)
+				cnt--;
+			else
+				cnt += mid;
+
+			if (cnt > rem)
+				r = mid;
+			else
+				l = mid;
+		}
+
+		if (l == rem)
+			ans[ord[i]] = -1;
+		else
+			ans[ord[i]] = r;
+	}
+
+
+	for (int i = 0; i < n; i++)
+	{
+		cout << ans[i] << ' ';
+	}
 
 }
