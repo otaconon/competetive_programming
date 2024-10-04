@@ -1,59 +1,88 @@
-#include <bits/stdc++.h>
+struct ModInt
+{
+	int v;
+	static const int m = 998244353;
 
-using namespace std;
+	ModInt(int v = 0)
+	{
+		this->v = ((v % m) + m) % m;
+	}
 
-struct ModInt {
-    int v, m;
+	operator int() const
+	{
+		return v;
+	}
 
-    ModInt(int v, int m)
-        : v(v),
-        m(m)
-    {}
+	ModInt& operator=(const int rhs)
+	{
+        v = ((rhs % m) + m) % m;
+		return *this;
+	}
 
-    ModInt() : v(0), m(998244353) {}
+	ModInt& operator+=(const ModInt& rhs)
+	{
+		v = (v + rhs.v) % m;
+		return *this;
+	}
 
-    operator int() const {
-        return v;
-    }
+	ModInt& operator-=(const ModInt& rhs)
+	{
+		v = (v - rhs.v + m) % m;
+		return *this;
+	}
 
-    ModInt& operator=(const int rhs) {
-        v = rhs % m;
-        return *this;
-    }
+	ModInt& operator*=(const ModInt& rhs)
+	{
+		v = (int)(((long long)v * rhs.v) % m + m) % m;
+		return *this;
+	}
 
-    ModInt& operator+=(const ModInt& rhs) {
-        v = (v + rhs) % m;
-        return *this;
-    }
+	ModInt pow(int exponent) const
+	{
+		ModInt result(1);
+		ModInt base(v);
+		while (exponent > 0)
+		{
+			if (exponent % 2 == 1)
+				result *= base;
+			base *= base;
+			exponent /= 2;
+		}
+		return result;
+	}
 
-    friend ModInt operator+(ModInt lhs, const ModInt& rhs) {
-        lhs += rhs;
-        return lhs;
-    }
+	ModInt inv() const
+	{
+		return pow(m - 2);
+	}
 
-    ModInt& operator*=(const ModInt& rhs) {
-        for (int i = 0; i < rhs; i++)
-            v += v;
+	ModInt& operator/=(const ModInt& rhs)
+	{
+		*this *= rhs.inv();
+		return *this;
+	}
 
-        return *this;
-    }
+	friend ModInt operator+(ModInt lhs, const ModInt& rhs)
+	{
+		lhs += rhs;
+		return lhs;
+	}
 
-    friend ModInt operator*(ModInt lhs, const ModInt& rhs) {
-        lhs *= rhs;
-        return lhs;
-    }
+	friend ModInt operator-(ModInt lhs, const ModInt& rhs)
+	{
+		lhs -= rhs;
+		return lhs;
+	}
 
-    ModInt inv(int x) const {
-        return ModInt(x <= 1 ? x : m - (long long)(m/x) * inv(m % x) % m, m);
-    }
+	friend ModInt operator*(ModInt lhs, const ModInt& rhs)
+	{
+		lhs *= rhs;
+		return lhs;
+	}
 
-    ModInt& operator/=(const ModInt& rhs) {
-        v *= rhs.inv(rhs.v);
-        return *this;
-    }
-
-    friend ModInt operator/(ModInt lhs, const ModInt& rhs) {
-        lhs /= rhs;
-        return lhs;
-    }
+	friend ModInt operator/(ModInt lhs, const ModInt& rhs)
+	{
+		lhs /= rhs;
+		return lhs;
+	}
 };
