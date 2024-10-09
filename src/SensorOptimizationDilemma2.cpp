@@ -4,44 +4,34 @@ using namespace std;
 
 using ll = long long;
 
-struct process {
-    int a, p, b, q;
-};
 
 int main() {
     ll n, x;
     cin >> n >> x;
-    vector<process> a(n);
-    for (auto& p : a)
-        cin >> p.a >> p.p >> p.b >> p.q;
+    vector<int> a(n), p(n), b(n), q(n);
+    for (int i = 0; i < n; i++) {
+        cin >> a[i] >> p[i] >> b[i] >> q[i];
+
+        if (a[i] * q[i] < b[i] * p[i]) {
+            swap(a[i], b[i]);
+            swap(p[i], q[i]);
+        }
+    }
 
     ll l = 0, r = 1e10;
     while (l < r) {
         ll mid = l + (r - l + 1) / 2;
-        ll rem = x;
-
         bool valid = true;
+        ll cost = 0;
         for (int i = 0; i < n; i++) {
-            process b = a[i];
-            if (b.p > b.q) {
-                swap(b.a, b.b);
-                swap(b.p, b.q);
+            ll now = LLONG_MAX;
+            for (ll j = 0; j <= a[i]; j++) {
+                ll k = max(mid - b[i] * j, 0LL);
+                k = (k + a[i] - 1) / a[i];
+                now = min(now, q[i] * j + (ll)p[i] * k);
             }
-            ll fit = x / b.p; // if filling with a, how many a's fit
-            ll cost = fit * b.p; // cost of filling with a
-            ll prod = fit * b.a;
-            // Now try replacing some a's with b's to see if it is possible to get a better result
-            while (cost - b.p + b.q < x) {
-                if (prod >= mid) {
-                    break;
-                }
-                cost -= b.p;
-                cost += b.q;
-                prod -= b.a;
-                prod += b.b;
-            }
-
-            if (cost > x || prod < mid) {
+            cost += now;
+            if (cost > x) {
                 valid = false;
                 break;
             }
