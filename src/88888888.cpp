@@ -1,23 +1,21 @@
 #include <bits/stdc++.h>
+#include <atcoder/modint>
 
 using namespace std;
 
-constexpr long long mod = 998244353;
+using mint = atcoder::static_modint<998244353>;
 
 int main() {
     long long n;
     cin >> n;
 
-    string s = "";
-    string x = to_string(n);
-    for (int i = 0; i < min(n, 11LL); i++) {
-        s += x[i % x.size()];
-    }
-    long long i = s.size() * n % 18LL;
-    string s_ans = "";
-    for (int j = 0; j < s.size(); j++) {
-        s_ans += s[(i + j) % s.size()];
-    }
+    long long x = n;
+    mint r = 1;
+    while (x) {
+        x /= 10;
+        r *= mint(10);
+    } 
 
-    cout << stoll(s_ans) % mod << endl;
+    mint ans = mint(n) * (mint(1) - r.pow(n)) * (mint(mint(1) - r).inv());
+    cout << ans.val() << endl;
 }
