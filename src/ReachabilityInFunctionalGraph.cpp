@@ -20,51 +20,78 @@ int brute_force(vector<int>& vec) {
     return accumulate(ans.begin(), ans.end(), 0);
 }
 
-// It's easy to see that we are iterating over same nodes many times.
-// The problem can be solved by Finding every cycle, then all the nodes in the cycle can go to each other
-// Starting a dp from leaf nodes we can iterate adding to dp
+namespace tarjan {
+    vector<vector<int>> adj, adj_t;
+    vector<int> order, vis, id;
 
-long long solve(vector<int>& vec) {
-    // Create vector a, to store ingoing path, so that it is possible to iterate from leafs
-    size_t n = vec.size();
-    vector<vector<int>> a(n);
-    stack<pair<int, int>> s;
-    for (size_t i = 0; i < n; i++) {
-        a[vec[i]].push_back(i);
-        if (vec[i] == i)
-            s.push({i, -1});
+    void dfs1(int v) {
+        vis[v] = true;
+        for (int u : adj[v]) {
+            if (!vis[u]) { dfs1(u); }
+        }
+        order.push_back(v);
     }
 
-    // dp to store the number of nodes it is possible to travel from node i
-    // backtrack to update all the nodes visited in cycle to the value dp[cycle_end]
-    vector<int> dp(n, 1);
-    vector<bool> vis(n);
-    stack<int> backtrack;
-    while (!s.empty()) {
-        auto [node, parent] = s.top();
-        backtrack.push(node);
-        s.pop();
+    void dfs2(int x, int comp) {
+        vis[x] = true;
 
-        if (vis[node]) {
-            int cycle = backtrack.top();
-            backtrack.pop();
-            while (backtrack.top() != cycle) {
-                dp[backtrack.top()] = dp[cycle];
-                backtrack.pop();
+        for (int u : adj_t[x]) {
+            if (!vis[u]) { dfs2(u, comp); }
+        }
+        id[x] = comp;
+    }
+
+    long long solve_tarjan(vector<int>& vec) {
+        size_t n = vec.size();
+        
+        adj.resize(n);
+        adj_t.resize(n);
+        id.resize(n);
+        vis.resize(n);
+
+        for (int i = 0; i < n; i++) {
+		    if (!vis[i]) { dfs1(i); }
+	    }
+
+        vis.assign(n, false);
+        std::reverse(begin(order), end(order));
+        int comps = 0;
+        for (int v : order) {
+            if (!vis[v]) {
+                dfs2(v, comps);
+                comps++;
+            }
+        }
+        
+        for (size_t i = 0; i < n; i++) {
+            adj[i].push_back(vec[i]);
+            adj[vec[i]].push_back(i);
+        }
+
+        vector<int> cmp(n);
+        for (int i = 0; i < n;i++) {
+            cmp[id[i]]++;
+        }
+
+        vector<set<int>> con(n);
+        for (int i = 0; i < n; i++) {
+            con[id[i]].insert(id[i]);
+            con[id[i]].insert(id[vec[i]]);
+        }
+
+        vector<int> cnt(n);
+        for (int i = 0; i < n; i++) {
+            for (auto& x : con[id[i]]) {
+                cnt[i] += cmp[x];
             }
         }
 
-        vis[node] = true;
-        dp[node] += parent != -1 ? dp[parent] : 0; 
-
-        for (auto& child : a[node]) {
-            if (child == node)
-                continue;
-            s.push({child, node});
+        for (auto& x : id) {
+            cout << x << ' ';
         }
+        cout << endl;
+        return std::accumulate(cnt.begin(), cnt.end(), 0LL);
     }
-
-    return std::accumulate(dp.begin(), dp.end(), 0LL);
 }
 
 int main() {
@@ -77,5 +104,5 @@ int main() {
     }
 
     cout << brute_force(a) << endl;
-    cout << solve(a) << endl;
+    cout << tarjan::solve_tarjan(a) << endl;
 }
