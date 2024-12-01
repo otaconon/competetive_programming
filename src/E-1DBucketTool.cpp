@@ -5,29 +5,32 @@ using namespace std;
 class UnionFind {
 public:
   UnionFind(vector<int>& vec) {
-    rank.resize(vec.size(), 1);
     parent = vec;
+    color = vec;
+    rank.resize(vec.size(), 1);
     cnt.resize(vec.size(), 1);
+    color_cnt.resize(vec.size(), 1);
   }
 
   int find(int u) {
-    if (parent[u] == u)
-      return u;
-    return find(parent[u]);
+    if (parent[u] != u)
+      parent[u] = find(parent[u]);
+    return parent[u];
   }
 
-  int getColorCount(int u) {
-    return cnt[find(u)];
+  int getColorCount(int c) {
+    return color_cnt[c];
   }
 
-
-  // Needs introduction of a color array. Currently it works as if changing disconnected segments affect each other.
   void paint(int u, int c) {
-    unify(u, c);
+    int p = find(u);
+    color_cnt[color[p]] -= cnt[p];
+    color[p] = c;
+    color_cnt[c] += cnt[p];
     
-    if (u-1 >= 0 && parent[find(u-1)] == c)
+    if (u-1 >= 0 && color[find(u-1)] == c)
       unify(u-1, u);
-    if (u+1 < parent.size() && parent[find(u+1)] == c)
+    if (u+1 < parent.size() && color[find(u+1)] == c)
       unify(u, u+1);
   }
 
@@ -51,6 +54,8 @@ private:
   vector<int> parent;
   vector<int> rank;
   vector<int> cnt;
+  vector<int> color;
+  vector<int> color_cnt;
 };
 
 int main() {
@@ -71,11 +76,11 @@ int main() {
       uf.paint(x, c);
     }
     else {
-      int x;
-      cin >> x;
-      x--;
+      int c;
+      cin >> c;
+      c--;
 
-      cout << uf.getColorCount(x) << endl;
+      cout << uf.getColorCount(c) << endl;
     }
   }
 }
