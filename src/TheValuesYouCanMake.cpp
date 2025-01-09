@@ -9,24 +9,20 @@ int main() {
     for (auto& x : c)
         cin >> x;
 
-    int m = accumulate(c.begin(), c.end(), 0);
-
-    vector<vector<bool>> dp(n, vector<bool>(m+1));
-    dp[0][c[0]] = true;
-    for (int i = 1; i < n; i++) {
-        dp[i][c[i]] = true;
-        for (int j = 0; j <= m; j++) {
-            dp[i][j] = dp[i-1][j];
-
-            if (j - c[i] < 0)
-                continue;
-
-            dp[i][j] = dp[i][j] || dp[i-1][j-c[i]];
+    vector<vector<bool>> dp(k+1, vector<bool>(k+1));
+    dp[0][0] = true;
+    for (int i = 0; i < n; i++) {
+        for (int j = k; j >= c[i]; j--) {
+            for (int m = j; m >= c[i]; m--) {
+                dp[j][m] = dp[j][m] || dp[j-c[i]][m-c[i]];
+                dp[j][m-c[i]] = dp[j][m-c[i]] || dp[j-c[i]][m-c[i]];
+            }
         }
     }
 
-    for (int i = 0; i <= m; i++) {
-        if (dp[n-1][i])
+    cout << accumulate(dp[k].begin(), dp[k].end(), 0) << endl;
+    for (int i = 0; i <= k; i++) {
+        if (dp[k][i])
             cout << i << ' ';
     }
 }
