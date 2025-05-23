@@ -80,15 +80,14 @@ public:
 struct SCC {
     vector<bool> visited;
     vector<vector<int>> adj;
-    vector<int> output;
     vector<vector<int>> components;
     vector<vector<int>> adj_cond;
 
-    void dfs(int v) {
+    void dfs(int v, vector<int>& output) {
         visited[v] = true;
         for (auto u : adj[v])
             if (!visited[u])
-                dfs(u);
+                dfs(u, output);
         output.push_back(v);
     }
 
@@ -100,10 +99,11 @@ struct SCC {
 
         visited.assign(n, false);
 
+        vector<int> output;
         // first series of depth first searches
         for (int i = 0; i < n; i++)
             if (!visited[i])
-                dfs(i);
+                dfs(i, output);
 
         // create adjacency list of G^T
         vector<vector<int>> adj_rev(n);
@@ -120,11 +120,11 @@ struct SCC {
         for (auto v : order)
             if (!visited[v]) {
                 std::vector<int> component;
-            dfs(v);
-            components.push_back(component);
-            int root = *min_element(begin(component), end(component));
-            for (auto u : component)
-                roots[u] = root;
+                dfs(v, component);
+                components.push_back(component);
+                int root = *min_element(begin(component), end(component));
+                for (auto u : component)
+                    roots[u] = root;
             }
 
         // add edges to condensation graph
@@ -177,6 +177,64 @@ struct SegmentTree {
             else
                 update(v*2+1, tm+1, tr, pos, new_val);
             t[v] = t[v*2] + t[v*2+1];
+        }
+    }
+};
+
+struct SegmentTreeRR {
+    int n;
+    vector<int> a;
+    vector<int> t;
+    vector<bool> marked;
+
+    SegmentTreeRR(int n, vector<int>& vec) {
+        t.resize(n*4);
+        marked.resize(n*4);
+        a = vec;
+    }
+
+    void build(int v, int tl, int tr) {
+        if (tl == tr) {
+            t[v] = a[tl];
+        } else {
+            int tm = (tl + tr) / 2;
+            build(v*2, tl, tm);
+            build(v*2+1, tm+1, tr);
+            t[v] = t[v*2] + t[v*2+1];
+        }
+    }
+
+    void push(int v) {
+        if (marked[v]) {
+            t[v*2] = t[v*2+1] = t[v];
+            marked[v*2] = marked[v*2+1] = true;
+            marked[v] = false;
+        }
+    }
+
+    int get(int v, int tl, int tr, int pos) {
+        if (tl == tr) {
+            return t[v];
+        }
+        push(v);
+        int tm = (tl + tr) / 2;
+        if (pos <= tm) 
+            return get(v*2, tl, tm, pos);
+        else
+            return get(v*2+1, tm+1, tr, pos);
+    }
+
+    void update(int v, int tl, int tr, int l, int r, int new_val) {
+        if (l > r) 
+            return;
+        if (l == tl && tr == r) {
+            t[v] = new_val;
+            marked[v] = true;
+        } else {
+            push(v);
+            int tm = (tl + tr) / 2;
+            update(v*2, tl, tm, l, min(r, tm), new_val);
+            update(v*2+1, tm+1, tr, max(l, tm+1), r, new_val);
         }
     }
 };
