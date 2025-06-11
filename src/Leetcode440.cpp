@@ -16,7 +16,7 @@ public:
         if (order == K)
             return x / 10;
 
-        for (long long i = max(1LL, x); i <= x + 10; i++) {
+        for (long long i = max(1LL, x); i < x + 10; i++) {
             long long cnt = count_children(i, i+1);
             if (cnt >= K)
                 return search(i * 10, order+1);
