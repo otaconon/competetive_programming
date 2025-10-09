@@ -10,6 +10,9 @@ class Solution:
       d[frag] += 1
   
     ans = []
+    for i in range(0, k):
+      for j in range(i, n, k):
+        
     for i in range(0, n):
       cache = {}
       found = True
@@ -18,6 +21,9 @@ class Solution:
           found = False
           break
         frag = s[i+j-k:i+j]
+        if frag not in d:
+          found = False
+          break
         if frag not in cache:
             cache[frag] = 0
         cache[frag] += 1
