@@ -40,7 +40,7 @@ class Solution:
       
     self.generate_answers() 
     
-    return self.ans
+    return len(self.ans)
 
 sol = Solution()  
 pprint.pp(sol.solveNQueens(4))
