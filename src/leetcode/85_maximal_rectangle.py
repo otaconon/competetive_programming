@@ -1,5 +1,6 @@
 import pprint
 
+'''
 class Solution:
   def maximalRectangle(self, matrix: list[list[str]]) -> int:
     n, m = len(matrix), len(matrix[0])
@@ -35,6 +36,40 @@ class Solution:
           ans = max(ans, cnt_r*x, cnt_c*x, x*x)
 
     return ans
+'''
+  
+class Solution:
+  def maximalRectangle(self, matrix: list[list[str]]) -> int:
+    n, m = len(matrix), len(matrix[0])
+    matrix = [list(map(int, row))for row in matrix]
+    hist = [0] * m
+    ans = 0
+    for r in range(n):
+      for c in range(m):
+        hist[c] = hist[c] + 1 if matrix[r][c] else 0
+      ans = max(ans, self.getMaxArea(hist)) 
+    
+    return ans
+    
+  def getMaxArea(self, hist):
+    m = len(hist)
+    left, right = [-1] * m, [m] * m
+    st = [] 
+    for c in range(m):
+      while st and hist[st[-1]] >= hist[c]:
+        st.pop()
+      left[c] = st[-1] if st else -1
+      st.append(c)
+    
+    st.clear()
+    for c in range(m-1, -1, -1):
+      while st and hist[st[-1]] >= hist[c]:
+        st.pop()
+      right[c] = st[-1] if st else m
+      st.append(c)
+    
+    return max((right[i] - left[i] - 1) * hist[i] for i in range(m))
+
   
 sol = Solution()
 #pprint.pp([["1","1","1","1","1","1","1","1"],["1","1","1","1","1","1","1","0"],["1","1","1","1","1","1","1","0"],["1","1","1","1","1","0","0","0"],["0","1","1","1","1","0","0","0"]])
