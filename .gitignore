@@ -13,3 +13,5 @@ ac-library/
 **.in
 **.out
 **.txt
+**.bin
+**.dSym
