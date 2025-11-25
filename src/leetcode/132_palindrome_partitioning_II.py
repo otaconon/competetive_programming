@@ -1,10 +1,4 @@
-"""
-Iterate over i 0 to n-1, which will be the size of substring from beginning
-that we consider. then iterate j from 0 to i and check what new plaindromes can be made
-with s[i]. then if we decide to split at s[k] the lest number of cuts is going to be
-dp[k] + 1
-"""
-
+import math
 
 class Solution:
   def brute_force(self, s: str) -> list:
@@ -32,7 +26,18 @@ class Solution:
     return best_cuts
           
   def minCut(self, s: str) -> int:
-    pass
+    n = len(s)
+    dp = [[math.inf for _ in range(n+1)] for _ in range(n+1)]
+    dp[0][0] = -1
+    for i in range(1, n+1):
+      for j in range(i-1, -1, -1):
+        dp[i][j] = dp[i][j+1]
+        if s[j:i] == s[j:i][::-1]:
+          dp[i][j] = min(dp[i][j], dp[j][0] + 1)
+        
+    return dp[n][0]
 
 sol = Solution()
-print(sol.brute_force(input()))
+s = input()
+print(sol.brute_force(s))
+print(sol.minCut(s))
