@@ -1,3 +1,5 @@
+from collections import defaultdict
+from functools import lru_cache
 import math
 
 class Solution:
@@ -27,15 +29,39 @@ class Solution:
           
   def minCut(self, s: str) -> int:
     n = len(s)
-    dp = [[math.inf for _ in range(n+1)] for _ in range(n+1)]
-    dp[0][0] = -1
-    for i in range(1, n+1):
-      for j in range(i-1, -1, -1):
-        dp[i][j] = dp[i][j+1]
-        if s[j:i] == s[j:i][::-1]:
-          dp[i][j] = min(dp[i][j], dp[j][0] + 1)
+    pal = [[False for _ in range(n)] for _ in range(n)]
+    dp = [0 for _ in range(n)]
+    for r in range(n):
+      mn = r
+      for l in range(r+1):
+        if s[l] == s[r] and (l+1 > r-1 or pal[l+1][r-1]):
+          pal[l][r] = 1
+          mn = 0 if l == 0 else min(mn, dp[l-1]+1)
+      dp[r] = mn
+         
+    return dp[n-1]
+  
+  def okMinCut(self, s: str) -> int:
+    n = len(s)
+    d = defaultdict(set)
+    def comp_palindromes(l, r):
+      while l >= 0 and r < n and s[l] == s[r]:
+        d[l].add(r)
+        l -= 1; r += 1
         
-    return dp[n][0]
+    for i in range(n):
+      comp_palindromes(i, i)
+      comp_palindromes(i, i+1)
+    
+    @lru_cache(None)
+    def dfs(u):
+      if u == n: return 0
+      tmp = [] 
+      for v in range(u, n+1):
+        if v in d[u]: tmp.append(dfs(v+1)+1)
+      return min(tmp) 
+
+    return dfs(0)-1
 
 sol = Solution()
 s = input()
