@@ -1,20 +1,30 @@
-from collections import Counter
+from bisect import bisect_left
 
 class Solution:
   def threeSum(self, nums: list[int]) -> list[list[int]]:
-    cnt = Counter(nums)
-    nums = list(set(nums))
+    nums = sorted(nums)
     n = len(nums)
-    ans = set()
-    for i in range(n):
-      cnt[nums[i]] -= 1
-      for j in range(i, n):
-        cnt[nums[j]] -= 1
-        x = -nums[i] - nums[j]
-        if cnt[nums[i]] >= 0 and cnt[nums[j]] >= 0 and cnt[x] > 0:
-          ans.add(tuple(sorted((nums[i], nums[j], x))))
-        cnt[nums[j]] += 1
-      cnt[nums[i]] += 1
+    ans = []
+    for i in range(n-2):
+      if i > 0 and nums[i] == nums[i-1]:
+        continue
+      
+      l, r = i+1, n-1
+      while l < r:
+        if nums[l] + nums[r] + nums[i] == 0:
+          ans.append((nums[i], nums[l], nums[r]))
+          while l < r and nums[l] == nums[l+1]:
+            l += 1
+          while l < r and nums[r] == nums[r-1]:
+            r -= 1
+          
+          l += 1
+          r -= 1
+          
+        elif nums[l] + nums[r] + nums[i] < 0:
+          l += 1
+        else:
+          r -= 1
 
     return list(ans)
         
